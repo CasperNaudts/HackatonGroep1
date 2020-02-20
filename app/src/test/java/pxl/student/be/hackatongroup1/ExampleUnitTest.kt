@@ -3,6 +3,10 @@ package pxl.student.be.hackatongroup1
 import org.junit.Test
 
 import org.junit.Assert.*
+import pxl.student.be.hackatongroup1.data.async.DetectCall
+import pxl.student.be.hackatongroup1.data.async.OnHttpDataAvailable
+import pxl.student.be.hackatongroup1.data.model.RequestDetect
+import java.nio.charset.Charset
 
 /**
  * Example local unit test, which will execute on the development machine (host).
@@ -11,7 +15,13 @@ import org.junit.Assert.*
  */
 class ExampleUnitTest {
     @Test
-    fun addition_isCorrect() {
-        assertEquals(4, 2 + 2)
+    fun testDetect() {
+        print("Test")
+        val detectCall = DetectCall(object: OnHttpDataAvailable{
+            override fun onHttpDataAvailable(data: String) {
+                print("Data: $data")
+            }
+        })
+        detectCall.execute(RequestDetect("Test".toByteArray(Charsets.UTF_8)))
     }
 }
