@@ -1,15 +1,18 @@
 package pxl.student.be.hackatongroup1.data.async
 
+import android.R.attr.bitmap
+import android.graphics.Bitmap.CompressFormat
 import android.os.AsyncTask
 import android.util.Log
 import pxl.student.be.hackatongroup1.data.model.RequestDetect
+import java.io.ByteArrayOutputStream
 import java.io.IOException
+import java.io.OutputStream
 import java.io.OutputStreamWriter
-import java.lang.Exception
-import java.lang.StringBuilder
 import java.net.HttpURLConnection
 import java.net.MalformedURLException
 import java.net.URL
+
 
 private const val TAG = "HttpCall"
 private const val DETECT = "/face/v1.0/detect?returnFaceAttributes=age,gender"
@@ -46,11 +49,11 @@ class DetectCall(private val listener: OnHttpDataAvailable) : AsyncTask<RequestD
             val searchUrl = URL("$ENDPOINT$DETECT")
             with(searchUrl.openConnection() as HttpURLConnection) {
                 requestMethod = "POST" // optional default is GET
+                setRequestProperty("Content-Type", "application/octet-stream")
                 setRequestProperty("Ocp-Apim-Subscription-Key", KEY)
 
-                val wr = OutputStreamWriter(outputStream)
-                wr.write(requestDetect[0].toString())
-                wr.flush()
+                outputStream.write(requestDetect[0]!!.data)
+                outputStream.flush()
 
                 inputStream.bufferedReader().use {
                     it.useLines {

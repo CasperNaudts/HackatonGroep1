@@ -36,6 +36,7 @@ class IdentifyCall(private val listener: OnHttpDataAvailable): AsyncTask<Request
             val searchUrl = URL("$ENDPOINT$IDENTIFY")
             with(searchUrl.openConnection() as HttpURLConnection) {
                 requestMethod = "POST" // optional default is GET
+                setRequestProperty("Content-Type", "application/json")
                 setRequestProperty("Ocp-Apim-Subscription-Key", KEY)
 
                 val wr = OutputStreamWriter(outputStream)
