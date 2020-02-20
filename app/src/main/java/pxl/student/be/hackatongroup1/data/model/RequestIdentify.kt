@@ -18,7 +18,7 @@ class RequestIdentify(val faceIds: Array<String>,
 
     fun fromModelToJson(): String{
         val gson = GsonBuilder().create()
-        return gson.toJson(this, ResponseDetect::class.java)
+        return gson.toJson(this, RequestIdentify::class.java)
     }
 
     override fun toString(): String {
