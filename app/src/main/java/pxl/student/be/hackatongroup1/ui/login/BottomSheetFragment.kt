@@ -13,6 +13,7 @@ import kotlinx.android.synthetic.main.bottom_sheet.*
 
 import pxl.student.be.hackatongroup1.R
 import pxl.student.be.hackatongroup1.domain.entity.Person
+import pxl.student.be.hackatongroup1.ui.NO_PERSON_TEXT
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -46,18 +47,37 @@ class BottomSheetFragment(val person: Person): BottomSheetDialogFragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        isRecognised = person.name != "No person founded"
+        isRecognised = person.name != NO_PERSON_TEXT
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.bottom_sheet, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        nextButton.text = if(isRecognised) "Volgende" else "Annuleer"
-        nextButton.setOnClickListener {
-            Log.d(TAG, "Next photo")
+        if(isRecognised){
+            configureRecognized()
+        } else {
+            configureNotRecognized()
         }
-        loginMessage.text = if(isRecognised) "Bent u ${person.name}?"  else person.name
+    }
+
+    fun configureRecognized(){
+        nextButton.text = "Inschrijven"
+        nextButton.setOnClickListener {
+            Log.d(TAG, "Next Photo")
+        }
+        loginMessage.text = "Bent u ${person.name}?"
+    }
+
+    fun configureNotRecognized(){
+        nameTextField.visibility = View.VISIBLE
+        nextButton.text = "Aanmaken"
+        nextButton.setOnClickListener {
+            if(!nameTextField.text.isNullOrEmpty()){
+
+            }
+        }
+        loginMessage.text = person.name
     }
 
     override fun onAttach(context: Context) {

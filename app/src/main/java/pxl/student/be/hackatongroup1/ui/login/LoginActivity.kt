@@ -16,6 +16,7 @@ import pxl.student.be.hackatongroup1.data.model.RequestDetect
 import pxl.student.be.hackatongroup1.data.model.ResponsePersonLargePersonGroup
 import pxl.student.be.hackatongroup1.domain.entity.Person
 import pxl.student.be.hackatongroup1.domain.services.FaceService
+import pxl.student.be.hackatongroup1.ui.NO_PERSON_TEXT
 
 
 private const val TAG = "LoginActivity"
@@ -30,6 +31,7 @@ class LoginActivity : AppCompatActivity(), OnHttpDataAvailable, BottomSheetFragm
         camera.addCameraListener(object: CameraListener(){
             override fun onPictureTaken(result: PictureResult) {
                 super.onPictureTaken(result)
+                activateLoading()
                 service.detectFace(RequestDetect(result.data))
             }
         })
@@ -47,12 +49,14 @@ class LoginActivity : AppCompatActivity(), OnHttpDataAvailable, BottomSheetFragm
     }
 
     override fun onHttpDataAvailable(data: String) {
+        deactivateLoading()
         if(data != "No person founded"){
-            Log.d(TAG, Person.fromModelToEntity(ResponsePersonLargePersonGroup.fromJsonToModel(data)).name)
+            val person = Person.fromModelToEntity(ResponsePersonLargePersonGroup.fromJsonToModel(data)).name
+            showLoginBottomDialog(person)
         } else {
             Log.d(TAG, "No person founded")
+            showLoginBottomDialog(NO_PERSON_TEXT)
         }
-        showLoginBottomDialog(data)
     }
 
     fun showLoginBottomDialog(data: String){
@@ -62,5 +66,15 @@ class LoginActivity : AppCompatActivity(), OnHttpDataAvailable, BottomSheetFragm
 
     override fun onFragmentInteraction(uri: Uri) {
         Log.d(TAG, "FRAGMENT INTERACTION")
+    }
+
+    fun activateLoading(){
+        loadingCard.visibility = View.VISIBLE
+        takePictureButton.visibility = View.GONE
+    }
+
+    fun deactivateLoading(){
+        loadingCard.visibility = View.GONE
+        takePictureButton.visibility = View.VISIBLE
     }
 }

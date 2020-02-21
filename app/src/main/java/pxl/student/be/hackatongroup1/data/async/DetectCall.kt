@@ -15,7 +15,7 @@ import java.net.URL
 
 
 private const val TAG = "HttpCall"
-private const val DETECT = "/face/v1.0/detect?returnFaceAttributes=age,gender"
+private const val DETECT = "/face/v1.0/detect?returnFaceAttributes=age,gender&recognitionModel=recognition_02"
 
 
 enum class NetworkStatus{

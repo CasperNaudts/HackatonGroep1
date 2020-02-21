@@ -26,8 +26,8 @@ class FaceService(private val listener: OnHttpDataAvailable){
     fun identifyFace(requestIdentify: RequestIdentify){
         IdentifyCall(object: OnHttpDataAvailable{
             override fun onHttpDataAvailable(data: String) {
-                if(!data.contains("doInBackground")){
-                    val responseIdentify = ResponseIdentify.fromJsonToModel(data)
+                val responseIdentify = ResponseIdentify.fromJsonToModel(data)
+                if(!data.contains("doInBackground") && responseIdentify.candidates.size > 0){
                     getPerson(responseIdentify.candidates[0].personId)
                 } else {
                     listener.onHttpDataAvailable("No person founded")
@@ -40,4 +40,8 @@ class FaceService(private val listener: OnHttpDataAvailable){
         val personUrl = "/largepersongroups/$LARGEGROUPID/persons/$personId"
         PersonCall(listener).execute(personUrl)
     }
+
+    fun addperson(){}
+    fun addPhoto(){}
+    fun trainModel(){}
 }
