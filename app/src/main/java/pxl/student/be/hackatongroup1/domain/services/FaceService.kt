@@ -17,7 +17,7 @@ class FaceService(private val listener: OnHttpDataAvailable){
                     val requestIdentify = RequestIdentify.fromDetectToIdentify(responseDetect)
                     identifyFace(requestIdentify)
                 } else {
-                    listener.onHttpDataAvailable("No Name")
+                    listener.onHttpDataAvailable("No person founded")
                 }
             }
         }).execute(requestData)
@@ -26,8 +26,12 @@ class FaceService(private val listener: OnHttpDataAvailable){
     fun identifyFace(requestIdentify: RequestIdentify){
         IdentifyCall(object: OnHttpDataAvailable{
             override fun onHttpDataAvailable(data: String) {
-                val responseIdentify = ResponseIdentify.fromJsonToModel(data)
-                getPerson(responseIdentify.candidates[0].personId)
+                if(!data.contains("doInBackground")){
+                    val responseIdentify = ResponseIdentify.fromJsonToModel(data)
+                    getPerson(responseIdentify.candidates[0].personId)
+                } else {
+                    listener.onHttpDataAvailable("No person founded")
+                }
             }
         }).execute(requestIdentify)
     }

@@ -8,20 +8,34 @@
     tools:context=".ui.login.LoginActivity">
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/switchCameraButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="16dp"
+        android:clickable="true"
+        app:backgroundTint="#fff"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:srcCompat="@android:drawable/presence_invisible" />
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/takePictureButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="16dp"
         android:clickable="true"
+        app:backgroundTint="#fff"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:srcCompat="@mipmap/ic_launcher_round" />
+        app:srcCompat="@android:drawable/ic_menu_camera" />
 
     <com.otaliastudios.cameraview.CameraView
         android:id="@+id/camera"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:background="#fff"
         android:keepScreenOn="true"
         app:cameraAudio="off">
 

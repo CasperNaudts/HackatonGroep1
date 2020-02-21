@@ -23,10 +23,10 @@ class IdentifyCall(private val listener: OnHttpDataAvailable): AsyncTask<Request
         }
     }
 
-    override fun doInBackground(vararg requestDetect: RequestIdentify?): String {
+    override fun doInBackground(vararg requestIdentify: RequestIdentify?): String {
         Log.d(TAG, "doInBackground, called")
         val jsonResponse = StringBuilder()
-        if (requestDetect[0] == null) {
+        if (requestIdentify[0] == null) {
             status = NetworkStatus.NOT_INITIALIZED
             return "No URL specified"
         }
@@ -39,9 +39,12 @@ class IdentifyCall(private val listener: OnHttpDataAvailable): AsyncTask<Request
                 setRequestProperty("Content-Type", "application/json")
                 setRequestProperty("Ocp-Apim-Subscription-Key", KEY)
 
-                val result = requestDetect[0]!!.fromModelToJson().toByteArray()
-                outputStream.write(requestDetect[0]!!.fromModelToJson().toByteArray())
+                val result = requestIdentify[0]!!.fromModelToJson().toByteArray()
+                outputStream.write(requestIdentify[0]!!.fromModelToJson().toByteArray())
                 outputStream.flush()
+
+                val status = responseCode
+                val message = responseMessage
 
                 inputStream.bufferedReader().use {
                     it.useLines {
@@ -53,7 +56,7 @@ class IdentifyCall(private val listener: OnHttpDataAvailable): AsyncTask<Request
             }
             return jsonResponse.toString()
         } catch (e: Exception) {
-            val errorMessage: String;
+            val errorMessage: String
 
             when (e) {
                 is MalformedURLException -> {
