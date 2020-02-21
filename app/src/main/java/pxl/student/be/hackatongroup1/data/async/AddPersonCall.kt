@@ -1,33 +1,18 @@
 package pxl.student.be.hackatongroup1.data.async
 
-import android.R.attr.bitmap
-import android.graphics.Bitmap.CompressFormat
 import android.os.AsyncTask
 import android.util.Log
+import pxl.student.be.hackatongroup1.data.model.RequestAddPerson
 import pxl.student.be.hackatongroup1.data.model.RequestDetect
-import java.io.ByteArrayOutputStream
 import java.io.IOException
-import java.io.OutputStream
-import java.io.OutputStreamWriter
 import java.net.HttpURLConnection
 import java.net.MalformedURLException
 import java.net.URL
 
+private const val TAG = "AddPersonCall"
+private const val DETECT = "/face/v1.0/largepersongroups/ferm/persons"
 
-private const val TAG = "DetectCall"
-private const val DETECT = "/face/v1.0/detect?returnFaceAttributes=age,gender&recognitionModel=recognition_02"
-
-
-enum class NetworkStatus{
-    OK, IDLE, NOT_INITIALIZED, FAILED_OR_EMPTY, PERMISSIONS_ERROR, ERROR
-}
-
-interface OnHttpDataAvailable{
-    fun onHttpDataAvailable(data: String)
-}
-
-class DetectCall(private val listener: OnHttpDataAvailable) : AsyncTask<RequestDetect, Void, String>() {
-
+class AddPersonCall(private val listener: OnHttpDataAvailable) : AsyncTask<RequestAddPerson, Void, String>() {
     private var status = NetworkStatus.IDLE
 
     override fun onPostExecute(result: String?) {
@@ -36,10 +21,10 @@ class DetectCall(private val listener: OnHttpDataAvailable) : AsyncTask<RequestD
         }
     }
 
-    override fun doInBackground(vararg requestDetect: RequestDetect?): String {
+    override fun doInBackground(vararg requestAddPerson: RequestAddPerson?): String {
         Log.d(TAG, "doInBackground, called")
         val jsonResponse = StringBuilder()
-        if (requestDetect[0] == null) {
+        if (requestAddPerson[0] == null) {
             status = NetworkStatus.NOT_INITIALIZED
             return "No URL specified"
         }
@@ -49,10 +34,10 @@ class DetectCall(private val listener: OnHttpDataAvailable) : AsyncTask<RequestD
             val searchUrl = URL("$ENDPOINT$DETECT")
             with(searchUrl.openConnection() as HttpURLConnection) {
                 requestMethod = "POST" // optional default is GET
-                setRequestProperty("Content-Type", "application/octet-stream")
+                setRequestProperty("Content-Type", "application/json")
                 setRequestProperty("Ocp-Apim-Subscription-Key", KEY)
 
-                outputStream.write(requestDetect[0]!!.data)
+                outputStream.write(requestAddPerson[0]!!.fromModelToJson().toByteArray())
                 outputStream.flush()
 
                 inputStream.bufferedReader().use {

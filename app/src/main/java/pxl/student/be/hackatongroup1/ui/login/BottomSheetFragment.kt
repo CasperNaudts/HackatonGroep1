@@ -12,7 +12,10 @@ import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import kotlinx.android.synthetic.main.bottom_sheet.*
 
 import pxl.student.be.hackatongroup1.R
+import pxl.student.be.hackatongroup1.data.async.OnHttpDataAvailable
+import pxl.student.be.hackatongroup1.data.model.RequestAddPerson
 import pxl.student.be.hackatongroup1.domain.entity.Person
+import pxl.student.be.hackatongroup1.domain.services.FaceService
 import pxl.student.be.hackatongroup1.ui.NO_PERSON_TEXT
 
 // TODO: Rename parameter arguments, choose names that match
@@ -30,7 +33,7 @@ private const val PERSON = "person"
 
 private const val TAG = "BottomSheetFragment"
 
-class BottomSheetFragment(val person: Person): BottomSheetDialogFragment() {
+class BottomSheetFragment(val person: Person, val service: FaceService): BottomSheetDialogFragment() {
     // TODO: Rename and change types of parameters
     private var isRecognised: Boolean = false
     private var param1: String? = null
@@ -64,6 +67,7 @@ class BottomSheetFragment(val person: Person): BottomSheetDialogFragment() {
     fun configureRecognized(){
         nextButton.text = "Inschrijven"
         nextButton.setOnClickListener {
+            this.dismiss()
             Log.d(TAG, "Next Photo")
         }
         loginMessage.text = "Bent u ${person.name}?"
@@ -73,8 +77,13 @@ class BottomSheetFragment(val person: Person): BottomSheetDialogFragment() {
         nameTextField.visibility = View.VISIBLE
         nextButton.text = "Aanmaken"
         nextButton.setOnClickListener {
-            if(!nameTextField.text.isNullOrEmpty()){
-
+            nextButton.visibility = View.GONE
+            val name = nameTextField.text
+            if(!name.isNullOrEmpty()){
+                loginMessage.text = "Persoon wordt aangemaakt, even geduld ..."
+                addedProgressBar.visibility = View.VISIBLE
+                service.addPerson(RequestAddPerson(name.toString()))
+                this.dismiss()
             }
         }
         loginMessage.text = person.name
@@ -122,7 +131,15 @@ class BottomSheetFragment(val person: Person): BottomSheetDialogFragment() {
         // TODO: Rename and change types and number of parameters
         @JvmStatic
         fun newInstance(param1: String, param2: String) =
-            BottomSheetFragment(Person("No person recognized")).apply {
+            BottomSheetFragment(Person("No person recognized"), FaceService(object : OnHttpDataAvailable{
+                override fun onHttpDataAvailable(data: String) {
+                    Log.d(TAG, "Nothing happens")
+                }
+            }, object : OnHttpDataAvailable{
+                override fun onHttpDataAvailable(data: String) {
+                    Log.d(TAG, "Nothing happens")
+                }
+            })).apply {
                 arguments = Bundle().apply {
                     putString(PERSON, param1)
                 }

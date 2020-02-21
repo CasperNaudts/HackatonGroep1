@@ -22,17 +22,23 @@ import pxl.student.be.hackatongroup1.ui.NO_PERSON_TEXT
 private const val TAG = "LoginActivity"
 
 class LoginActivity : AppCompatActivity(), OnHttpDataAvailable, BottomSheetFragment.OnFragmentInteractionListener {
+    lateinit var service: FaceService;
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_login)
-        val service = FaceService(this)
+        service = FaceService(this, object: OnHttpDataAvailable{
+            override fun onHttpDataAvailable(data: String) {
+                Log.d(TAG, "Training is started")
+            }
+        })
         camera.setLifecycleOwner(this)
         camera.addCameraListener(object: CameraListener(){
             override fun onPictureTaken(result: PictureResult) {
                 super.onPictureTaken(result)
                 activateLoading()
-                service.detectFace(RequestDetect(result.data))
+                service.photoData = result.data
+                service.detectFace(RequestDetect(service.photoData))
             }
         })
 
@@ -60,7 +66,7 @@ class LoginActivity : AppCompatActivity(), OnHttpDataAvailable, BottomSheetFragm
     }
 
     fun showLoginBottomDialog(data: String){
-        val bottomSheet = BottomSheetFragment(Person(data))
+        val bottomSheet = BottomSheetFragment(Person(data), service)
         bottomSheet.show(supportFragmentManager, bottomSheet.tag)
     }
 

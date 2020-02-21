@@ -1,13 +1,14 @@
 package pxl.student.be.hackatongroup1.domain.services
 
+import android.util.Log
 import pxl.student.be.hackatongroup1.LARGEGROUPID
-import pxl.student.be.hackatongroup1.data.async.DetectCall
-import pxl.student.be.hackatongroup1.data.async.IdentifyCall
-import pxl.student.be.hackatongroup1.data.async.OnHttpDataAvailable
-import pxl.student.be.hackatongroup1.data.async.PersonCall
+import pxl.student.be.hackatongroup1.data.async.*
 import pxl.student.be.hackatongroup1.data.model.*
 
-class FaceService(private val listener: OnHttpDataAvailable){
+private const val TAG = "FaceService"
+
+class FaceService(private val listener: OnHttpDataAvailable, private val trainListener: OnHttpDataAvailable){
+    lateinit var photoData : ByteArray
 
     fun detectFace(requestData: RequestDetect){
         DetectCall(object: OnHttpDataAvailable{
@@ -41,7 +42,31 @@ class FaceService(private val listener: OnHttpDataAvailable){
         PersonCall(listener).execute(personUrl)
     }
 
-    fun addperson(){}
-    fun addPhoto(){}
-    fun trainModel(){}
+    fun addPerson(requestAddPerson: RequestAddPerson){
+        AddPersonCall(object : OnHttpDataAvailable{
+            override fun onHttpDataAvailable(data: String) {
+                val responseAddPerson = ResponseAddPerson.fromJsonToModel(data)
+                val requestAddPhoto = RequestAddPhoto.fromAddPhotoToIdentify(responseAddPerson, photoData)
+                addPhoto(requestAddPhoto)
+            }
+
+        }).execute(requestAddPerson)
+    }
+
+    fun addPhoto(requestAddPhoto: RequestAddPhoto){
+        AddPhotoCall(object: OnHttpDataAvailable{
+            override fun onHttpDataAvailable(data: String) {
+                trainModel()
+            }
+        }).execute(requestAddPhoto)
+    }
+
+    fun trainModel(){
+        TrainCall(object: OnHttpDataAvailable{
+            override fun onHttpDataAvailable(data: String) {
+                photoData = "".toByteArray()
+                trainListener.onHttpDataAvailable("Training started")
+            }
+        }).execute("Testing")
+    }
 }

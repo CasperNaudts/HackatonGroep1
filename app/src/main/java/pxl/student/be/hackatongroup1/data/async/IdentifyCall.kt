@@ -39,7 +39,6 @@ class IdentifyCall(private val listener: OnHttpDataAvailable): AsyncTask<Request
                 setRequestProperty("Content-Type", "application/json")
                 setRequestProperty("Ocp-Apim-Subscription-Key", KEY)
 
-                val result = requestIdentify[0]!!.fromModelToJson().toByteArray()
                 outputStream.write(requestIdentify[0]!!.fromModelToJson().toByteArray())
                 outputStream.flush()
 
